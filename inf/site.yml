@@ -1,0 +1,6 @@
+---
+- include: all.yml
+- include: app.yml
+- include: lb.yml
+- include: deploy.yml
+  tags: [deploy]

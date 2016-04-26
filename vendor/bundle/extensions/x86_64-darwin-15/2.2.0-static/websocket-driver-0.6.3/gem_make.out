@@ -1,0 +1,11 @@
+/opt/rubies/2.2.4/bin/ruby -r ./siteconf20160519-42882-w7knu.rb extconf.rb
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 websocket_mask.bundle ./.gem.20160519-42882-1sjfzlk
