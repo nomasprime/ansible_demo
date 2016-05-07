@@ -1,0 +1,23 @@
+---
+- name: checkout repo
+  git:
+    dest: "{{ golang_goenv_root }}"
+    repo: "https://github.com/syndbg/goenv.git"
+  with_items: "{{ golang_versions }}"
+
+- name: update profile
+  lineinfile:
+    create: yes
+    dest: "{{ ansible_env.HOME }}/.bash_profile"
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+  with_items:
+    - { line: 'export GOENV_ROOT="{{ golang_goenv_root }}"', regexp: '^export GOENV_ROOT=' }
+    - { line: 'export PATH="$GOENV_ROOT/bin:$PATH"', regexp: '^export PATH="\$GOENV_ROOT/bin:\$PATH"' }
+    - { line: eval "$(goenv init -)", regexp: 'eval "\$\(goenv init -\)"' }
+
+- name: install versions
+  command: "{{ golang_goenv_root}}/bin/goenv install {{ item }}"
+  args:
+    creates: "{{ golang_goenv_root }}/versions/{{ item }}"
+  with_items: "{{ golang_versions }}"

@@ -1,0 +1,19 @@
+---
+- name: update profile
+  lineinfile:
+    create: yes
+    dest: "{{ ansible_env.HOME }}/.bash_profile"
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+  with_items:
+    - { line: 'export GOPATH="{{ golang_workspace }}"', regexp: '^export GOPATH=' }
+    - { line: 'export PATH="$GOPATH/bin:$PATH"', regexp: '^export PATH="\$GOPATH/bin:\$PATH"' }
+
+- name: create workspace
+  become: true
+  file:
+    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user }}"
+    path: "{{ golang_workspace }}"
+    recurse: yes
+    state: directory

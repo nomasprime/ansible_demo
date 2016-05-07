@@ -1,0 +1,4 @@
+---
+golang_goenv_root: "{{ ansible_env.HOME }}/.goenv"
+golang_workspace: "{{ ansible_env.HOME }}/work"
+golang_versions: []
