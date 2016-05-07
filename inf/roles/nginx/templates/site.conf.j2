@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+{% for upstream_key, upstream_value in item.value.upstreams.iteritems() %}
+
+upstream {{ upstream_key }} {
+{%  for server in upstream_value.servers %}
+    server {{ server }};
+{%  endfor %}
+}
+{% endfor %}
+{% for server in item.value.servers %}
+
+server {
+    listen {{ server.listen }};
+{%  for location in server.locations %}
+
+    location {{ location.uri }} {
+{%      if location.access_log | default() %}
+        access_log {{ location.access_log }};
+{%      endif %}
+{%      if location.add_headers is defined %}
+        {%  for add_header_key, add_header_value in location.add_headers.iteritems() -%}
+                add_header {{ add_header_key }} {{ add_header_value }};
+{%          endfor %}
+{%      endif %}
+{%      if location.proxy_pass | default() %}
+        proxy_pass {{ location.proxy_pass }};
+{%      endif %}
+    }
+{%  endfor %}
+}
+{% endfor %}

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+{% for log_format_key, log_format_value in nginx_log_formats.iteritems() %}
+
+log_format {{ log_format_key }} '{{ log_format_value }}';
+{% endfor %}

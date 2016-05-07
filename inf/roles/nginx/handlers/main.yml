@@ -1,0 +1,26 @@
+---
+- name: nginx reload
+  changed_when: true
+  debug: msg="Config first..."
+  notify:
+    - _nginx config check
+    - _nginx reload
+
+- name: nginx restart
+  changed_when: true
+  debug: msg="Config first..."
+  notify:
+    - _nginx config check
+    - _nginx restart
+
+- name: _nginx config check
+  become: yes
+  command: /usr/sbin/nginx -t
+
+- name: _nginx reload
+  become: yes
+  service: name=nginx state=reloaded
+
+- name: _nginx restart
+  become: yes
+  service: name=nginx state=restarted

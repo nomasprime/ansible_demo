@@ -1,0 +1,60 @@
+---
+- name: install
+  apt: pkg=nginx state=present
+  become: yes
+
+- name: log formats
+  become: yes
+  template:
+    dest: /etc/nginx/conf.d/log-formats.conf
+    src: log-formats.conf.j2
+  when: "{{ nginx_log_formats }}"
+
+- name: disable default site
+  become: yes
+  file: path={{ item }} state=absent
+  notify:
+    - nginx reload
+  with_items:
+    - /etc/nginx/sites-available/default
+    - /etc/nginx/sites-enabled/default
+
+- name: main config
+  become: yes
+  notify:
+    - nginx restart
+  template:
+    dest: /etc/nginx/nginx.conf
+    src: nginx.conf.j2
+
+- name: site logs
+  become: yes
+  file: owner={{ nginx_user }} path={{ nginx_log_dir }}/{{ item.key }} state=directory
+  notify:
+    - nginx reload
+  with_dict: "{{ nginx_site_configs }}"
+
+- name: site configs
+  become: yes
+  notify:
+    - nginx reload
+  template:
+    dest: /etc/nginx/sites-available/{{ item.key }}.conf
+    src: site.conf.j2
+  with_dict: "{{ nginx_site_configs }}"
+
+- name: site enables
+  become: yes
+  file: state=link src=/etc/nginx/sites-available/{{ item.key }}.conf dest=/etc/nginx/sites-enabled/{{ item.key }}.conf
+  notify:
+    - nginx reload
+  with_dict: "{{ nginx_site_configs }}"
+
+# Need to always check config for subsequent runs
+- name: config check
+  become: yes
+  changed_when: true
+  command: /usr/sbin/nginx -t
+
+- name: started
+  service: enabled=yes name=nginx state=started
