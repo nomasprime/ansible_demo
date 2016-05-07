@@ -1,0 +1,20 @@
+---
+common_packages_install:
+  - avahi-daemon
+nginx_site_configs:
+  app:
+    servers:
+      - listen: 80
+        locations:
+          - access_log: "{{ nginx_log_dir }}/app/access.log upstream"
+            add_headers:
+              X-Upstream-Addr: $upstream_addr
+            proxy_pass: "http://app"
+            uri: "/"
+    upstreams:
+      app:
+        servers:
+          - "{{ hostvars['ansible-demo-app0']['ansible_eth1']['ipv4']['address'] }}:8484"
+          - "{{ hostvars['ansible-demo-app1']['ansible_eth1']['ipv4']['address'] }}:8484"
+secure_iptables_accept_avahi: true
+secure_iptables_accept_http: true
