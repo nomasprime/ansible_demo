@@ -1,0 +1,14 @@
+#!upstart
+
+# {{ ansible_managed }}
+
+description "{{ item.value.description }}"
+
+start on {{ item.value.start_on }}
+stop on {{ item.value.stop_on }}
+{% if item.value.exec | default() %}
+exec {{ item.value.exec }}
+{% endif %}
+{% if item.value.respawn | default() == true %}
+respawn
+{% endif %}

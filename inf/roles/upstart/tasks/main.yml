@@ -1,0 +1,5 @@
+---
+- name: add upstart
+  become: yes
+  template: dest="/etc/init/{{ item.key }}.conf" src=upstart.conf.j2
+  with_dict: "{{ upstart_jobs }}"
