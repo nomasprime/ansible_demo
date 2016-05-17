@@ -1,2 +1,5 @@
 ---
 - hosts: all
+  roles:
+    - common
+    - secure

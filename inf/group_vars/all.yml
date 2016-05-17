@@ -1,0 +1,4 @@
+---
+common_packages_install:
+  - git
+secure_iptables_accept_ping: true
