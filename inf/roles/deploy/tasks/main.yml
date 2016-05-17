@@ -1,0 +1,35 @@
+---
+- name: to dir
+  become: yes
+  file:
+    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user }}"
+    path: "{{ deploy_to_dir }}"
+    state: directory
+
+- name: releases dir
+  file:
+    path: "{{ deploy_to_dir }}/{{ deploy_version_dir }}"
+    state: directory
+
+- include: "{{ deploy_hooks_release_version_before | default('empty.yml') }}"
+
+- name: release version
+  set_fact:
+    deploy_release_version: "{{ lookup('pipe', 'date -u +%Y%m%d%H%M%SZ') }}"
+  delegate_to: 127.0.0.1
+
+- name: copy
+  command: >
+    /bin/cp -r {{ deploy_from_dir }}
+    {{ deploy_to_dir }}/{{ deploy_version_dir }}/{{ deploy_release_version }}
+
+- include: "{{ deploy_hooks_symlink_before | default('empty.yml') }}"
+
+- name: symlink
+  file:
+    path: "{{ deploy_to_dir }}/{{deploy_current_dir }}"
+    src: "{{ deploy_version_dir }}/{{ deploy_release_version }}"
+    state: link
+
+- include: "{{ deploy_hooks_symlink_after | default('empty.yml') }}"

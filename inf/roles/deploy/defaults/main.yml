@@ -1,0 +1,4 @@
+---
+deploy_to_dir: /var/www/app
+deploy_current_dir: current
+deploy_version_dir: releases
