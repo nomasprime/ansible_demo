@@ -1,4 +1,9 @@
 ---
+deploy_from_dir: /home/vagrant/work/src/app
+deploy_hooks_release_version_before: "{{ playbook_dir }}/hooks/deploy/release_version_before.yml"
+deploy_hooks_symlink_after: "{{ playbook_dir }}/hooks/deploy/symlink_after.yml"
+deploy_hooks_symlink_before: "{{ playbook_dir }}/hooks/deploy/symlink_before.yml"
+deploy_to_dir: /home/vagrant/work/deploy
 golang_versions:
   - 1.6.1
 golang_goenv_root: "{{ ansible_env.HOME }}/.goenv"

@@ -1,0 +1,7 @@
+---
+- name: test app
+  command: "{{ golang_goenv_root }}/shims/go test"
+  args:
+    chdir: "{{ deploy_from_dir }}"
+  environment:
+    GOPATH: "{{ golang_workspace }}"

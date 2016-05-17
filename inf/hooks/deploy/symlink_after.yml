@@ -1,0 +1,25 @@
+---
+- name: compile app
+  command: "{{ golang_goenv_root }}/shims/go install app"
+  args:
+    chdir: "{{ deploy_from_dir }}"
+  environment:
+    GOPATH: "{{ golang_workspace }}"
+
+- name: start app service
+  become: yes
+  service: name=app state=started
+  notify:
+    - test
+
+- name: wait for app service
+  delegate_to: ansible-demo-lb0
+  run_once: yes
+  wait_for: host={{ item }} port=8484 delay=5 state=drained
+  with_items:
+    - "{{ hostvars['ansible-demo-app0']['ansible_eth1']['ipv4']['address'] }}"
+    - "{{ hostvars['ansible-demo-app1']['ansible_eth1']['ipv4']['address'] }}"
+
+- name: test smoke
+  local_action: shell bin/rspec
+  run_once: yes

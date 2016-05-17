@@ -1,0 +1,4 @@
+---
+- name: stop app service
+  become: yes
+  service: name=app state=stopped
