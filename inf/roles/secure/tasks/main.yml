@@ -1,0 +1,25 @@
+---
+- name: sshd
+  become: yes
+  notify: secure sshd restart
+  template:
+    dest: /etc/ssh/sshd_config
+    src: sshd_config.j2
+    validate: "/usr/sbin/sshd -t -f %s"
+
+- name: services remove
+  become: yes
+  package: name={{ item }} state=absent
+  with_items: "{{ secure_services_remove }}"
+
+- name: iptables install
+  become: yes
+  package: name=iptables-persistent state=present
+
+- name: iptables config
+  become: yes
+  notify: secure iptables restart
+  template:
+    dest: /etc/iptables/rules.v4
+    src: rule.v4.j2
+    validate: "/sbin/iptables-restore -t %s"

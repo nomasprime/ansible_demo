@@ -1,0 +1,18 @@
+---
+secure_iptables_accept_avahi: false
+secure_iptables_accept_established: true
+secure_iptables_accept_http: false
+secure_iptables_accept_https: false
+secure_iptables_accept_ping: false
+secure_iptables_accept_ssh: true
+secure_iptables_drop_fragments: true
+secure_iptables_drop_null_scan: true
+secure_iptables_drop_syn_flood: true
+secure_iptables_drop_xmas: true
+secure_iptables_logging: false
+secure_iptables_rules: []
+secure_services_remove:
+  - rpcbind
+secure_sshd_address_family: inet
+secure_sshd_password_authentication: "no"
+secure_sshd_permit_root_login: "no"

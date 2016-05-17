@@ -1,0 +1,76 @@
+# {{ ansible_managed }}
+
+*filter
+
+# Accept all output
+-P OUTPUT ACCEPT
+
+# Accept to loopback interface
+-A INPUT -i lo -j ACCEPT
+
+# Reject not to loopback interface from localhost
+-A INPUT ! -i lo -s 127.0.0.0/8 -j REJECT
+{% if secure_iptables_drop_fragments %}
+
+# Drop fragments
+-A INPUT -f -j DROP
+{% endif %}
+{% if secure_iptables_drop_null_scan %}
+
+# Drop null scan
+-A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+{% endif %}
+{% if secure_iptables_drop_syn_flood %}
+
+# Drop SYN flood
+-A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+{% endif %}
+{% if secure_iptables_drop_xmas %}
+
+# Drop Xmas
+-A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+{% endif %}
+{% if secure_iptables_accept_avahi %}
+
+# Accept avahi
+-A INPUT -p udp --dport 5353 -m udp -j ACCEPT
+{% endif %}
+{% if secure_iptables_accept_http %}
+
+# Accept HTTP
+-A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT
+{% endif %}
+{% if secure_iptables_accept_https %}
+
+# Accept HTTPS
+-A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT
+{% endif %}
+{% if secure_iptables_accept_ping %}
+
+# Accept ping
+-A INPUT -p icmp -m state --state NEW --icmp-type 8 -j ACCEPT
+{% endif %}
+{% if secure_iptables_accept_ssh %}
+
+# Accept SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+{% endif %}
+{% if secure_iptables_accept_established %}
+
+# Accept established
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+{% endif %}
+{% for rule in secure_iptables_rules %}
+{{ rule }}
+{% endfor %}
+{% if secure_iptables_logging %}
+
+# Logging
+-A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables_INPUT_denied: " --log-level 7
+{% endif %}
+
+# Reject other
+-A INPUT -j REJECT
+-A FORWARD -j REJECT
+
+COMMIT
