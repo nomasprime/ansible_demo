@@ -1,0 +1,14 @@
+---
+golang_versions:
+  - 1.6.1
+golang_goenv_root: "{{ ansible_env.HOME }}/.goenv"
+golang_workspace: "{{ ansible_env.HOME }}/work"
+secure_iptables_rules:
+  - "-A INPUT -p tcp --dport 8484 -m state --state NEW -s {{ hostvars['ansible-demo-lb0']['ansible_eth1']['ipv4']['address'] }} -j ACCEPT"
+upstart_jobs:
+  app:
+    description: App
+    exec: "{{ golang_workspace }}/bin/app"
+    respawn: yes
+    start_on: filesystem or runlevel [2345]
+    stop_on: shutdown
